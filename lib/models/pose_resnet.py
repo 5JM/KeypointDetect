@@ -216,17 +216,36 @@ class PoseResNet(nn.Module):
                 self._get_deconv_cfg(num_kernels[i], i)
 
             planes = num_filters[i]
+            
+            # org
+            # layers.append(
+            #     nn.ConvTranspose2d(
+            #         in_channels=self.inplanes,
+            #         out_channels=planes,
+            #         kernel_size=kernel,
+            #         stride=2,
+            #         padding=padding,
+            #         output_padding=output_padding,
+            #         bias=self.deconv_with_bias))
+            
+            # to Ti-tda4x
             layers.append(
-                nn.ConvTranspose2d(
-                    in_channels=self.inplanes,
-                    out_channels=planes,
-                    kernel_size=kernel,
-                    stride=2,
-                    padding=padding,
-                    output_padding=output_padding,
-                    bias=self.deconv_with_bias))
+                nn.Sequential(
+                    
+                    nn.Upsample(size=(80,80), mode='bilinear', align_corners=False),
+                    nn.Conv2d(
+                        in_channels= self.inplanes if i == 0 else 256,
+                        out_channels=planes,
+                        kernel_size=kernel+1,
+                        stride=1,  # Upsample이 크기를 조정했으므로 stride=1
+                        padding=padding+1,
+                        bias=self.deconv_with_bias
+                    )
+                )
+            )
             layers.append(nn.BatchNorm2d(planes, momentum=BN_MOMENTUM))
             layers.append(nn.ReLU(inplace=True))
+            
             self.inplanes = planes
 
         return nn.Sequential(*layers)
@@ -241,7 +260,7 @@ class PoseResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
+        
         x = self.deconv_layers(x)
         x = self.final_layer(x)
 
