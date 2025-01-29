@@ -8,6 +8,9 @@
     - OS : *Ubuntu 24.04* 
     - GPU : *RTX4070 Super*
 
+    **Custom**
+    - Replace deconv layer with upsample and conv2d for ti board (`lib/models/pose_resnet.py # _make_deconv_layer()`)
+
 1. ### Install dependency
     ```
     pip install -r requirements.txt
@@ -100,38 +103,3 @@ Make your exp file.yaml in `experiments/coco/resnetXX/{your_exp_file}.yaml`
     year = {2018}
 }
 ```
-
-
-
-
-4. Init output(training model output directory) and log(tensorboard log directory) directory:
-
-   ```
-   mkdir output 
-   mkdir log
-   ```
-
-   Your directory tree should look like this:
-
-   ```
-   ${POSE_ROOT}
-   ├── data
-   ├── experiments
-   ├── lib
-   ├── log
-   ├── models
-   ├── output
-   ├── pose_estimation
-   ├── README.md
-   └── requirements.txt
-   ```
-   
-### Data preparation
-
-Download and extract them under {POSE_ROOT}/data, and make them look like this:
-```
-
-
-### Citation
-
-
