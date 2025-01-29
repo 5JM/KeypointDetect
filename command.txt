@@ -1,0 +1,1 @@
+python pose_estimation/train.py --cfg experiments/coco/resnet50/custom_256x256.yaml
